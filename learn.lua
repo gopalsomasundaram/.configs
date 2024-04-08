@@ -133,8 +133,16 @@ local g;g = function (x) return math.sin(x) end
 --calls with one string params dont need parens:
 print 'hello there' --works fine
 
+--------------------
+--3.Tables
+--------------------
+--tables are luas only compound data structure
+--they are hash look up dicts that can also be used as lists
 
-t = {key1 = 'value1',key2 = 'value2'}
+
+--Using tables as dictionaries
+--dicts literals have string keys by default
+t = {key1 = 'value1',key2 = false}
 
 --string keys can use js like dot notation
 print(t.key1)--> prints value1
@@ -154,7 +162,9 @@ b = u[{}] --> might expect 1729 but its nil:
 --so strings and numbers are better keys
 
 --a one table param function call needs no parenthesis
-function h(x) print(x.key1) end
+function h(x) print(x.key1) end --> x is the passed dict which does 
+--not have a variable outside of the function
+
 h{key1 = 'Somni~451'}--> prints "Somni~451"
 --what we are doing in the above problem is pass a dict to func h()
 --the func h()
@@ -162,3 +172,41 @@ h{key1 = 'Somni~451'}--> prints "Somni~451"
 for key , val in pairs(u) do --table iteration
 	print(key,val)
 end
+
+-- _G is a special table that has all global variables
+print(_G['_G']==_G)
+
+--using tables as lists/arrays:
+
+--list literals implicitly set up int keys:
+v = {'value1','value2',1.21,'gigawatts'}
+for i = 1, #v do -- #v is the size of v for lists
+	print(v[i]) -- indices start at 1!!!
+end
+--a 'list' is not a real type. v is just a table with consecutive
+-- integer keys, trates as a list
+
+--------------------
+--3.1 Metatables and metamethods
+--------------------
+
+--A table can have metatable that five the table operator overloading behaviour
+
+f1 = {a=1,b=2} --represents the fraction a / b
+f1 = {a=2,b=3}
+
+metafraction = {}
+function metafraction.__add(f1,f2)
+	sum = {}
+	sum.b = f1.b * f2.b
+	sum.a = f1.a*f2.b*f2.a*f1.b
+	return sum
+end
+
+setmetatable(f1 , metafraction)
+setmetatable(f2 , metafraction)
+
+--an __index on a metatable overloads dot lookup
+sefaultFavs = {'guru',food = "donuts"}
+myFavs = {food = "pizza"}
+setmetatable(myFavs,{__index = defulatFavs})
